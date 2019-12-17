@@ -3,22 +3,30 @@ package com.example.iiiandroid19;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SwitchCompat;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.hardware.camera2.CameraManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.RadioGroup;
 
 import java.io.File;
 import java.util.Set;
@@ -26,6 +34,7 @@ import java.util.Set;
 public class MainActivity extends AppCompatActivity {
     private ImageView img;
     private File sdroot;
+    private SwitchCompat fswitch;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,10 +66,39 @@ public class MainActivity extends AppCompatActivity {
         init();
     }
 
+    private CameraManager cmgr;
+    private Vibrator vibrator;
     private void init(){
+        cmgr = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
+        vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+
         sdroot = Environment.getExternalStorageDirectory();
         img = findViewById(R.id.img);
+        fswitch = findViewById(R.id.fswitch);
+        fswitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked){
+                    lightOn();
+                }else{
+                    lightOff();
+                }
+            }
+        });
     }
+
+    private void lightOn(){
+        try {
+            cmgr.setTorchMode("0", true);
+        }catch (Exception e){}
+    }
+
+    private void lightOff(){
+        try {
+            cmgr.setTorchMode("0", false);
+        }catch (Exception e){}
+    }
+
 
     public void test1(View view) {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -104,6 +142,19 @@ public class MainActivity extends AppCompatActivity {
             if (photoUri != null) img.setImageURI(photoUri);
 
 
+        }
+    }
+
+    public void test3(View view) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+//            vibrator.vibrate(VibrationEffect.createOneShot(1*1000,
+//                    VibrationEffect.DEFAULT_AMPLITUDE));
+
+            long[] mVibratePattern = new long[]{0, 400, 200, 400};
+            vibrator.vibrate(mVibratePattern, -1);
+
+        }else {
+            vibrator.vibrate(1 * 1000);
         }
     }
 }
