@@ -67,8 +67,10 @@ public class MainActivity extends AppCompatActivity {
         startActivityForResult(intent, 1);
 
     }
+
+    private Uri photoUri;
     public void test2(View view) {
-        Uri photoUri = FileProvider.getUriForFile(
+        photoUri = FileProvider.getUriForFile(
                 this,
                 getPackageName() +".provider",
                 new File(sdroot, "iii.jpg"));
@@ -95,9 +97,12 @@ public class MainActivity extends AppCompatActivity {
             Bitmap bmp = (Bitmap) bundle.get("data");
             img.setImageBitmap(bmp);
         }else if (requestCode == 2 && resultCode == RESULT_OK){
-            Bitmap bmp =
-                BitmapFactory.decodeFile(sdroot.getAbsolutePath() + "/iii.jpg");
-            img.setImageBitmap(bmp);
+//            Bitmap bmp =
+//                BitmapFactory.decodeFile(sdroot.getAbsolutePath() + "/iii.jpg");
+//            img.setImageBitmap(bmp);
+
+            if (photoUri != null) img.setImageURI(photoUri);
+
 
         }
     }
