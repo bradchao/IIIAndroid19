@@ -1,15 +1,25 @@
 package com.example.iiiandroid19;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.provider.MediaStore;
+import android.util.Log;
+import android.view.View;
+import android.widget.ImageView;
+
+import java.util.Set;
 
 public class MainActivity extends AppCompatActivity {
+    private ImageView img;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +52,31 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void init(){
+        img = findViewById(R.id.img);
+    }
 
+    public void test1(View view) {
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        startActivityForResult(intent, 1);
+
+    }
+    public void test2(View view) {
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1 && resultCode == RESULT_OK){
+            Bundle bundle = data.getExtras();
+//            Set<String> keys = bundle.keySet();
+//            for (String key : keys){
+//                Object value = bundle.get(key);
+//                Log.v("brad", key + ":" + value.getClass().getName());
+//
+//            }
+
+            Bitmap bmp = (Bitmap) bundle.get("data");
+            img.setImageBitmap(bmp);
+        }
     }
 }
